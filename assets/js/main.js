@@ -16,12 +16,13 @@ const debounceTime = (() => {
   }
 })()
 
-const getData = url => fetch(url)
-  .then(res => res.json())
-  .then(data => {
-    if (!data || !data.Search) throw new Error('Сервер повернув некоректні дані!')
-    return data.Search
-  })
+const getData = async (url) => {
+    const response = await fetch(url.replace(/^http:/, 'https:'));
+    if (!response.ok) {
+      throw new Error(`Помилка за адресою ${url}, статус помилки ${response.status}`);
+    }
+    return await response.json();
+  }
 
 const addMovieToList = movie => {
   const item = document.createElement('div')
