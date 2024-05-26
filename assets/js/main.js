@@ -16,13 +16,12 @@ const debounceTime = (() => {
   }
 })()
 
-const getData = async (url) => {
-    const response = await fetch(url.replace(/^http:/, 'https:'));
-    if (!response.ok) {
-      throw new Error(`Помилка за адресою ${url}, статус помилки ${response.status}`);
-    }
-    return await response.json();
-  }
+const getData = url => fetch(url)
+  .then(res => res.json())
+  .then(data => {
+    if (!data || !data.Search) throw new Error('Сервер повернув некоректні дані!')
+    return data.Search
+  })
 
 const addMovieToList = movie => {
   const item = document.createElement('div')
@@ -50,7 +49,7 @@ const inputSearchHandler = e => {
     if (!searchQuery || searchQuery.length < 4 || searchQuery === lastSearchQuery) return
     if (!isSearchTriggerEnabled) clearMoviesMarkup()
 
-    getData(`https://www.omdbapi.com/?apikey=18b8609f&s=${searchQuery}`)
+    getData(`http://www.omdbapi.com/?apikey=18b8609f&s=${searchQuery}`)
       .then(movies => movies.forEach(addMovieToList))
       .catch(err => console.error(err))
 
